@@ -63,10 +63,10 @@ function animateSplashTitle() {
     const usedTarget = new Array(targetArr.length).fill(false);
 
     // For each span (in jumbled order), assign it a target index
-    jumbled.forEach((letter, jumpledIdx) => {
+    jumbled.forEach((letter, jumbledIdx) => {
       for (let t = 0; t < targetArr.length; t++) {
         if (!usedTarget[t] && targetArr[t] === letter) {
-          order[jumpledIdx] = t;
+          order[jumbledIdx] = t;
           usedTarget[t] = true;
           break;
         }
