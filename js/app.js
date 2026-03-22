@@ -12,6 +12,7 @@
 let game = null;
 let countdownInterval = null;
 let enchantInterval = null;
+let isTransitioning = false;
 
 // ────────────────────────────────────────────────────────────
 //  Screens
@@ -135,6 +136,7 @@ function startDaily() {
     showResultScreen(false);
     return;
   }
+  isTransitioning = false;
   const puzzle = getDailyPuzzle();
   game = createGame("daily", puzzle, puzzle.puzzleNumber);
   showScreen("game");
@@ -143,6 +145,7 @@ function startDaily() {
 }
 
 function startPractice() {
+  isTransitioning = false;
   const words = {
     five: getPracticeWord(5),
     six: getPracticeWord(6),
@@ -255,7 +258,7 @@ function updateCastButton() {
 //  Tile / Input Handling
 // ────────────────────────────────────────────────────────────
 function onTileClick(tileIndex) {
-  if (!game) return;
+  if (!game || isTransitioning) return;
   const round = currentRound(game);
   if (round.solved || round.failed) return;
   if (round.hintRevealed && tileIndex === 0) return;
@@ -290,7 +293,7 @@ function onTileClick(tileIndex) {
 }
 
 function onAnswerBoxClick(position) {
-  if (!game) return;
+  if (!game || isTransitioning) return;
   const round = currentRound(game);
   if (round.solved || round.failed) return;
   if (round.hintRevealed && position === 0) return;
@@ -315,7 +318,7 @@ function onAnswerBoxClick(position) {
 
 // ── Physical keyboard support ────────────────────────────────
 document.addEventListener("keydown", (e) => {
-  if (!game) return;
+  if (!game || isTransitioning) return;
   const round = currentRound(game);
   if (round.solved || round.failed) return;
   if (!screens.game.classList.contains("active")) return;
@@ -362,7 +365,7 @@ function buildOnScreenKeyboard() {
         btn.textContent = "⌫";
         btn.classList.add("kb-wide");
         btn.addEventListener("click", () => {
-          if (!game) return;
+          if (!game || isTransitioning) return;
           const round = currentRound(game);
           const start = round.hintRevealed ? 1 : 0;
           for (let i = round.answer.length - 1; i >= start; i--) {
@@ -376,7 +379,7 @@ function buildOnScreenKeyboard() {
       } else {
         btn.textContent = key;
         btn.addEventListener("click", () => {
-          if (!game) return;
+          if (!game || isTransitioning) return;
           const round = currentRound(game);
           let tileIdx = -1;
           const start = round.hintRevealed ? 1 : 0;
@@ -396,7 +399,7 @@ function buildOnScreenKeyboard() {
 //  Actions
 // ────────────────────────────────────────────────────────────
 function onHint() {
-  if (!game) return;
+  if (!game || isTransitioning) return;
   const round = currentRound(game);
   if (round.hintRevealed || round.solved || round.failed) return;
   applyHint(round);
@@ -405,7 +408,7 @@ function onHint() {
 }
 
 function onShuffle() {
-  if (!game) return;
+  if (!game || isTransitioning) return;
   const round = currentRound(game);
   if (round.solved || round.failed) return;
   round.tiles = reshuffleTiles(round.tiles, round.answer,
@@ -414,7 +417,7 @@ function onShuffle() {
 }
 
 function onCast() {
-  if (!game) return;
+  if (!game || isTransitioning) return;
   const round = currentRound(game);
   if (round.solved || round.failed) return;
 
@@ -437,18 +440,19 @@ function onCast() {
 
 function handleCorrect(round) {
   round.solved = true;
+  isTransitioning = true;
   // Green flash on answer boxes
   flashAnswerBoxes("correct");
   // Sparkle burst
   spawnSuccessSparkles();
 
+  const castBtn = document.getElementById("btn-cast");
+  if (castBtn) castBtn.disabled = true;
+
   // Animate tiles into correct order, then advance
   setTimeout(() => animateTilesReveal(round.answer, () => {
     setTimeout(advanceRound, 600);
   }), 400);
-
-  const castBtn = document.getElementById("btn-cast");
-  if (castBtn) castBtn.disabled = true;
 }
 
 function handleWrong(round) {
@@ -475,6 +479,7 @@ function handleWrong(round) {
 
   if (round.triesLeft === 0) {
     round.failed = true;
+    isTransitioning = true;
     setTimeout(() => handleRoundFail(round), 500);
   }
 }
@@ -485,10 +490,14 @@ function handleRoundFail(round) {
     if (game.mode === "daily") {
       // End the daily
       recordDailyFail({ puzzleNumber: game.puzzleNumber });
-      setTimeout(() => showResultScreen(false), 1200);
+      setTimeout(() => {
+        showResultScreen(false);
+        isTransitioning = false;
+      }, 1200);
     } else {
       // Practice: show "Next Round" button
       showPracticeNextRound();
+      isTransitioning = false;
     }
   });
 }
@@ -499,8 +508,10 @@ function advanceRound() {
   if (game.currentRoundIndex >= game.rounds.length) {
     // All rounds complete
     finishGame();
+    isTransitioning = false;
   } else {
     renderRound();
+    isTransitioning = false;
   }
 }
 
@@ -620,6 +631,7 @@ function nextPracticeRound() {
     if (el) el.classList.remove("active");
   });
 
+  isTransitioning = false;
   const usedWords = game ? game.rounds.map(r => r.answer) : [];
   const words = {
     five: getPracticeWord(5, usedWords),
