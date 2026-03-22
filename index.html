@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0d0f1a" />
+  <meta name="description" content="Anagramus — A daily wizarding word-unscramble game" />
+  <title>Anagramus</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     AMBIENT PARTICLES
+═══════════════════════════════════════════════════════ -->
+<div id="particles" aria-hidden="true"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN: SPLASH
+═══════════════════════════════════════════════════════ -->
+<div id="screen-splash" class="screen active" role="main">
+  <div class="splash-inner">
+    <div class="splash-crest" aria-hidden="true">⚡</div>
+
+    <div id="splash-title" aria-label="Anagramus"><!-- filled by JS --></div>
+    <p class="splash-tagline">Unscramble the enchanted words</p>
+
+    <div class="splash-buttons">
+      <button id="btn-daily" class="btn-primary btn-daily">
+        ⚡ Play Daily Anagramus
+      </button>
+      <button id="btn-practice" class="btn-primary">
+        🔮 Practice Mode
+      </button>
+      <div class="splash-secondary-row">
+        <button id="btn-stats-splash" class="btn-secondary">
+          📊 Stats
+        </button>
+        <button id="btn-howto-splash" class="btn-secondary">
+          📜 How to Play
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN: GAME
+═══════════════════════════════════════════════════════ -->
+<div id="screen-game" class="screen" role="main">
+  <!-- Sparkle burst layer -->
+  <div id="game-sparkles" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="game-header">
+    <button class="btn-icon btn-back-splash" aria-label="Back to menu" title="Back to menu">⟵</button>
+    <span id="game-mode-label">⚡ Daily — Round 1 of 3</span>
+    <button id="btn-stats-daily" class="btn-icon" aria-label="View stats" title="Stats">📊</button>
+  </header>
+
+  <!-- Tries remaining -->
+  <div id="tries-container" aria-label="Remaining tries" role="status"></div>
+
+  <!-- Main game area -->
+  <main class="game-main">
+
+    <!-- Scrambled letter tiles -->
+    <div id="tiles-container" role="group" aria-label="Scrambled letter tiles"></div>
+
+    <!-- Answer input boxes -->
+    <div id="answer-container" role="group" aria-label="Your answer"></div>
+
+    <!-- Action buttons -->
+    <div class="game-actions">
+      <button id="btn-hint"    class="btn-game-action btn-hint">✦ Hint</button>
+      <button id="btn-cast"    class="btn-game-action btn-cast" disabled>✨ Revelio</button>
+      <button id="btn-shuffle" class="btn-game-action btn-shuffle">⟳ Shuffle</button>
+    </div>
+
+    <!-- On-screen keyboard (mobile) -->
+    <div id="on-screen-keyboard" role="group" aria-label="On-screen keyboard"></div>
+
+  </main>
+
+  <!-- Practice: round failed overlay -->
+  <div id="practice-fail-overlay" class="practice-overlay" role="dialog" aria-modal="true" aria-labelledby="pf-title">
+    <div class="practice-overlay-card">
+      <div class="overlay-icon">💀</div>
+      <h2 id="pf-title">Out of tries!</h2>
+      <p>The answer has been revealed. Ready to try another enchantment?</p>
+      <div class="overlay-buttons">
+        <button id="btn-next-practice" class="btn-primary">🔮 Next Round</button>
+        <button id="btn-practice-home" class="btn-secondary btn-back-splash">← Back to Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Practice: all rounds won overlay -->
+  <div id="practice-win-overlay" class="practice-overlay" role="dialog" aria-modal="true" aria-labelledby="pw-title">
+    <div class="practice-overlay-card">
+      <div class="overlay-icon">✨</div>
+      <h2 id="pw-title">Well done, Wizard!</h2>
+      <p>You unscrambled all three practice words. Keep honing your craft?</p>
+      <div class="overlay-buttons">
+        <button id="btn-next-practice-win" class="btn-primary">🔮 Play Again</button>
+        <button id="btn-practice-home-win" class="btn-secondary btn-back-splash">← Back to Menu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN: RESULT (Daily outcome)
+═══════════════════════════════════════════════════════ -->
+<div id="screen-result" class="screen" role="main">
+  <div class="result-inner fade-in">
+
+    <h1 id="result-title">✨ Magnificent!</h1>
+    <p id="result-subtitle">You unscrambled all three words!</p>
+
+    <div class="divider"></div>
+
+    <!-- Share box (only on win) -->
+    <pre id="result-share-box" aria-label="Shareable results"></pre>
+
+    <!-- Countdown to next daily -->
+    <div id="result-countdown-wrap">
+      <p>✦ Next Daily Anagramus in</p>
+      <div id="result-countdown" aria-live="polite">00:00:00</div>
+      <p style="margin-top:6px;font-size:0.8rem;color:var(--text-dim)">See you tomorrow!</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="result-buttons">
+      <button id="btn-copy-results" class="btn-copy">📋 Copy Results</button>
+      <button id="btn-result-home"  class="btn-secondary btn-back-splash">← Back to Menu</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN: STATS
+═══════════════════════════════════════════════════════ -->
+<div id="screen-stats" class="screen" role="main">
+  <div class="stats-inner fade-in">
+
+    <button class="btn-back-splash" style="align-self:flex-start">← Back</button>
+
+    <h1 class="stats-title">📊 Your Spellbook</h1>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-value" id="stat-streak">0</div>
+        <div class="stat-label">Daily Streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-value" id="stat-best">0</div>
+        <div class="stat-label">Best Streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💎</div>
+        <div class="stat-value" id="stat-perfect">0</div>
+        <div class="stat-label">Perfect Days</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-label">Puzzles Solved</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN: HOW TO PLAY
+═══════════════════════════════════════════════════════ -->
+<div id="screen-howto" class="screen" role="main">
+  <div class="howto-inner fade-in">
+
+    <button class="btn-back-splash" style="align-self:flex-start">← Back</button>
+
+    <h1 class="howto-title">📜 The Rules</h1>
+
+    <div class="howto-card panel-parchment">
+      <ul class="howto-rules">
+        <li>
+          <span class="rule-icon">🔀</span>
+          <span>Unscramble the jumbled letters to reveal the hidden wizarding word.</span>
+        </li>
+        <li>
+          <span class="rule-icon">⚡</span>
+          <span><strong>Daily Anagramus</strong> has 3 rounds:<br>
+          Round 1 → <strong>5 letters</strong><br>
+          Round 2 → <strong>6 letters</strong><br>
+          Round 3 → <strong>8 letters</strong></span>
+        </li>
+        <li>
+          <span class="rule-icon">🔥</span>
+          <span>You get <strong>3 tries</strong> per round. Exhaust them and the daily is lost.</span>
+        </li>
+        <li>
+          <span class="rule-icon">✦</span>
+          <span>Use <strong>Hint</strong> to reveal the first letter — hints are counted in your final score.</span>
+        </li>
+        <li>
+          <span class="rule-icon">⟳</span>
+          <span>Use <strong>Shuffle</strong> to re-scramble the available letters if you need a fresh perspective.</span>
+        </li>
+        <li>
+          <span class="rule-icon">🔮</span>
+          <span><strong>Practice Mode</strong> is unlimited, untracked, and great for honing your craft.</span>
+        </li>
+        <li>
+          <span class="rule-icon">📱</span>
+          <span>Tap the letter tiles or type on your keyboard to fill in your answer. Tap a filled box to remove a letter.</span>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════════════════════ -->
+<script src="js/data.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/game.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
