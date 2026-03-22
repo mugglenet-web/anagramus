@@ -341,56 +341,6 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// ── On-screen keyboard ───────────────────────────────────────
-function buildOnScreenKeyboard() {
-  const kb = document.getElementById("on-screen-keyboard");
-  if (!kb) return;
-  const rows = [
-    ["Q","W","E","R","T","Y","U","I","O","P"],
-    ["A","S","D","F","G","H","J","K","L"],
-    ["BACK","Z","X","C","V","B","N","M","ENTER"]
-  ];
-
-  kb.innerHTML = "";
-  rows.forEach(row => {
-    const rowEl = document.createElement("div");
-    rowEl.className = "kb-row";
-    row.forEach(key => {
-      const btn = document.createElement("button");
-      btn.className = "kb-key";
-      if (key === "BACK") {
-        btn.textContent = "⌫";
-        btn.classList.add("kb-wide");
-        btn.addEventListener("click", () => {
-          if (!game) return;
-          const round = currentRound(game);
-          const start = round.hintRevealed ? 1 : 0;
-          for (let i = round.answer.length - 1; i >= start; i--) {
-            if (round.guess[i]) { onAnswerBoxClick(i); break; }
-          }
-        });
-      } else if (key === "ENTER") {
-        btn.textContent = "✨";
-        btn.classList.add("kb-wide");
-        btn.addEventListener("click", onCast);
-      } else {
-        btn.textContent = key;
-        btn.addEventListener("click", () => {
-          if (!game) return;
-          const round = currentRound(game);
-          let tileIdx = -1;
-          const start = round.hintRevealed ? 1 : 0;
-          for (let i = start; i < round.tiles.length; i++) {
-            if (round.tiles[i] === key) { tileIdx = i; break; }
-          }
-          if (tileIdx !== -1) onTileClick(tileIdx);
-        });
-      }
-      rowEl.appendChild(btn);
-    });
-    kb.appendChild(rowEl);
-  });
-}
 
 // ────────────────────────────────────────────────────────────
 //  Actions
@@ -762,9 +712,6 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btn-stats-daily")?.addEventListener("click", () => {
     showStatsScreen();
   });
-
-  // Build on-screen keyboard
-  buildOnScreenKeyboard();
 
   // Start splash
   initSplash();

@@ -490,36 +490,6 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 }
 .btn-cast:disabled { opacity: 0.4; cursor: default; transform: none; }
 
-/* On-screen keyboard */
-#on-screen-keyboard {
-  display: none;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%; max-width: 500px;
-  padding: 0 8px;
-}
-
-.kb-row {
-  display: flex; gap: 5px; justify-content: center;
-}
-
-.kb-key {
-  flex: 1; max-width: 38px;
-  height: 44px;
-  background: linear-gradient(145deg, #262e50, #1c2240);
-  border: 1.5px solid var(--tile-border);
-  border-radius: 8px;
-  color: var(--parchment);
-  font-size: 0.88rem;
-  font-weight: 600;
-  transition: all var(--anim-fast);
-}
-.kb-key:hover, .kb-key:active {
-  background: linear-gradient(145deg, #2e3860, #222c50);
-  border-color: var(--gold-dim);
-  transform: scale(0.96);
-}
-.kb-key.kb-wide { max-width: 58px; font-size: 0.8rem; }
 
 /* Practice overlays */
 .practice-overlay {
@@ -771,16 +741,7 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   .btn-primary { padding: 13px 20px; }
 }
 
-/* ────────────────────────────────────────────────────────────
-   MOBILE: show on-screen keyboard, hide physical hint
-   ──────────────────────────────────────────────────────────── */
-@media (hover: none) and (pointer: coarse) {
-  #on-screen-keyboard { display: flex; }
-}
-
-/* Desktop: always allow on-screen keyboard if viewport is narrow */
 @media (max-width: 480px) {
-  #on-screen-keyboard { display: flex; }
   .tile { width: 44px; height: 44px; font-size: 1.2rem; }
   .answer-box { width: 44px; height: 50px; font-size: 1.3rem; }
 }
