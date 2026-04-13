@@ -137,9 +137,9 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 /* Title */
 #splash-title {
   font-family: var(--font-title);
-  font-size: clamp(2.8rem, 10vw, 4.5rem);
+  font-size: clamp(2.2rem, 10vw, 4.5rem);
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   color: var(--gold);
   text-shadow:
     0 0 30px rgba(212,175,55,0.8),
@@ -742,8 +742,16 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 }
 
 @media (max-width: 480px) {
-  .tile { width: 44px; height: 44px; font-size: 1.2rem; }
-  .answer-box { width: 44px; height: 50px; font-size: 1.3rem; }
+  #splash-title { font-size: 2rem; letter-spacing: 0.06em; }
+  .tile { width: 42px; height: 42px; font-size: 1.15rem; }
+  .answer-box { width: 42px; height: 46px; font-size: 1.2rem; }
+  #tiles-container, #answer-container { gap: 6px; }
+}
+
+@media (max-width: 420px) {
+  .tile { width: 36px; height: 36px; font-size: 1.05rem; }
+  .answer-box { width: 36px; height: 40px; font-size: 1.1rem; }
+  #tiles-container, #answer-container { gap: 4px; }
 }
 
 /* ── Parchment panel texture overlay (subtle) ────────────────*/
